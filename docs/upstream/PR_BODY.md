@@ -1,17 +1,26 @@
 ## Summary
 
-- Fixes #<issue-number>: `spawn.sh` never stripped a type's `detect=`
-  session-identity env var(s) before exec'ing the CLI in the generated boot
-  script, so a same-type spawn (e.g. a `claude-code` session spawning
-  another `claude-code` peer via `agmsg spawn claude-code <name>`, exactly
-  the pattern `docs/actas.md` documents) hands the child the parent's own
+Opening this alongside #<issue-number> in case the approach discussed
+there looks reasonable — happy to adjust if a different direction is
+preferred.
+
+- `spawn.sh` never stripped a type's `detect=` session-identity env
+  var(s) before exec'ing the CLI in the generated boot script, so a
+  same-type spawn (e.g. a `claude-code` session spawning another
+  `claude-code` peer via `agmsg spawn claude-code <name>`, the same
+  pattern `docs/actas.md` describes) hands the child the parent's own
   session id. For `claude-code` this reliably breaks auth in the child.
 - `type.conf`'s `detect=` field already names exactly the var(s) that
-  identify a running session of that type, so the fix reads it via the
+  identify a running session of that type, so this reads it via the
   existing `agmsg_type_get` accessor and emits `unset $DETECT_VARS` as the
   first line of the boot script, before the CLI is invoked. `detect=explicit`
   (antigravity, copilot, hermes) is treated as "no vars to unset", matching
   its meaning everywhere else `detect=` is read.
+- As noted in the issue, this covers the `detect=` var(s) specifically —
+  for claude-code there's some uncertainty about whether a broader
+  `CLAUDE_CODE_*`/`CLAUDECODE*` strip is needed for the full symptom.
+  Went with the narrower, provable change here; glad to expand it if
+  that's the preferred direction.
 
 ## Test plan
 
