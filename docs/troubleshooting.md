@@ -16,6 +16,13 @@
 これを行うので、tmux から直接 `claude` を叩かずに必ずラッパー経由で起動すること。
 非管理環境ではこれらの変数は元々存在しないため、ラッパーは無害。
 
+codex 側にも同型の危険(`CODEX_THREAD_ID` / `CODEX_SANDBOX` の継承)があり、
+`team start` が `env -u` で剥がして起動する。外側セッションの検出状況は
+`team doctor` の「outer agent session check」で確認できる。この問題が
+どういう構成で起きるかの全体像は [agent-driven-setup.md](agent-driven-setup.md)、
+agmsg 本体の `spawn.sh` にある同種の問題(修正提案済み)は
+[upstream/](upstream/) を参照。
+
 ## 2. send.sh の引数順ミスでメッセージが届かない
 
 **症状**: `send.sh` は正常終了し DB にも行が入るのに、相手エージェントに届かない。
