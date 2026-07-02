@@ -569,8 +569,16 @@ cmd_start() {
   # Explicit official launcher (no global `codex` shell-function/PATH shim),
   # per docs/codex-monitor-beta.md "Optional PATH Shim" section - this keeps
   # a normal `codex` invocation elsewhere on the host completely unaffected.
+  #
+  # env -u: when `team start` is itself run from inside a Codex session (an
+  # agent bootstrapping this pair), the tmux server - and so this pane -
+  # inherits the outer session's CODEX_SANDBOX/CODEX_THREAD_ID, and the child
+  # Codex can mistake the parent's session for its own. Same hazard the
+  # claude pane avoids via launch-claude-reviewer.sh. Only these two
+  # session-identity vars are stripped - config vars like CODEX_HOME pass
+  # through untouched. No-op when they aren't set.
   tmux send-keys -t "$TMUX_SESSION:$CODEX_WINDOW" \
-    "'$SKILL_SCRIPTS/drivers/types/codex/codex-monitor.sh' --project '$WORKTREE_ROOT' --codex-command codex -- $(printf '%q' "$CODEX_INITIAL_PROMPT")" C-m
+    "env -u CODEX_SANDBOX -u CODEX_THREAD_ID '$SKILL_SCRIPTS/drivers/types/codex/codex-monitor.sh' --project '$WORKTREE_ROOT' --codex-command codex -- $(printf '%q' "$CODEX_INITIAL_PROMPT")" C-m
 
   echo "team: launched. Logs: $LOG_DIR/${CLAUDE_WINDOW}.log , $LOG_DIR/${CODEX_WINDOW}.log"
   echo "team: attach with: tmux attach -t $TMUX_SESSION"
@@ -742,6 +750,24 @@ cmd_doctor() {
   if [ -f "$codex_server_pidfile" ] && [ -z "$server_pid" ]; then
     echo "  WARNING: stale pidfile $codex_server_pidfile (process not running) - safe to remove."
     problems=$((problems + 1))
+  fi
+
+  echo "== outer agent session check =="
+  # Informational: when doctor/start runs inside another agent's session
+  # (agent-driven setup), the outer session's identity vars would leak into
+  # tmux panes. Both launch paths strip the same-type vars, so this is
+  # handled - reported here so an agent reading doctor output knows why the
+  # wrappers matter and must not bypass them by launching claude/codex bare.
+  if [ -n "${CLAUDE_CODE_SESSION_ID:-}${CLAUDECODE:-}" ]; then
+    echo "  outer claude-code session detected (CLAUDE_CODE_SESSION_ID/CLAUDECODE set)"
+    echo "  -> handled: claude pane starts via launch-claude-reviewer.sh, which strips these vars"
+  fi
+  if [ -n "${CODEX_THREAD_ID:-}${CODEX_SANDBOX:-}" ]; then
+    echo "  outer codex session detected (CODEX_THREAD_ID/CODEX_SANDBOX set)"
+    echo "  -> handled: codex pane starts under 'env -u CODEX_SANDBOX -u CODEX_THREAD_ID'"
+  fi
+  if [ -z "${CLAUDE_CODE_SESSION_ID:-}${CLAUDECODE:-}${CODEX_THREAD_ID:-}${CODEX_SANDBOX:-}" ]; then
+    echo "  none detected (running from a plain shell)"
   fi
 
   echo "== agmsg connectivity smoke test =="
