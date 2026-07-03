@@ -42,6 +42,13 @@ This isn't exotic — it's the normal shape of an actas-style same-type peer
 session using its own Bash tool to `agmsg spawn claude-code <name>` to
 bootstrap a teammate.
 
+Session-id collision is a problem class this project has already dealt
+with once — #93 (`claude --continue`/`--resume` sharing a session_id
+across two terminals, breaking the actas lock) got a real fix. This is a
+different trigger (spawning a fresh peer, not resuming) and a different
+symptom (auth breaks, not the lock/watcher), but the same underlying
+"two processes, one CLAUDE_CODE_SESSION_ID" shape.
+
 Caveat: `claude-code`'s environment carries ~27 `CLAUDE_CODE_*`/`CLAUDECODE`
 vars, including two (`CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR`,
 `CLAUDE_CODE_WEBSOCKET_AUTH_FILE_DESCRIPTOR`) that name file-descriptor
@@ -69,6 +76,16 @@ above), and the codex pane launches under
 [docs/agent-driven-setup.md](../agent-driven-setup.md) for the full
 picture and [docs/troubleshooting.md](../troubleshooting.md) for other
 issues we hit along the way.
+
+One more open question we haven't checked: #142 notes that `whoami`'s
+`detect_cli_type` falls back to walking the **process tree** (`ps`) when
+env vars are absent — "even with env vars removed, the test still fails
+under Codex because process-tree fallback detects `codex`". If `spawn.sh`
+or the CLI itself uses that same fallback anywhere in the identity path,
+unsetting `detect=` env vars alone might not be enough to stop a same-type
+child from recognizing its parent's process tree. We haven't verified
+whether this applies here — flagging it as something worth checking
+before calling the env-var fix complete.
 
 ## Environment
 
