@@ -1,11 +1,14 @@
 # Same-type `agmsg spawn` (claude-code → claude-code) inherits the parent's session-identity env vars, breaks auth
 
-Flagging this as something we hit building an autonomous Claude Code
-(reviewer) + Codex (implementer) dev pair on `spawn`, where the outer
-setup session spawns an independent `claude-code` peer alongside a
-`codex` peer — aware this specific same-type-peer pattern may be outside
-what agmsg is meant to support, so feel free to close if it's out of
-scope. Sharing since the bug and fix are both small and concrete.
+We hit this building an autonomous dev pair: a Claude Code reviewer and a
+Codex implementer, coordinated over agmsg. The setup itself runs as a
+`claude-code` session, and it uses `spawn` to start both peers — including
+a second, independent `claude-code` process for the reviewer. That
+`claude-code`-spawning-`claude-code` step is what triggers the bug below.
+
+This is a fairly specific use case, so if it's outside what `spawn` is
+meant to support, feel free to close — just sharing the bug and fix in
+case they're useful.
 
 ## Symptom
 
