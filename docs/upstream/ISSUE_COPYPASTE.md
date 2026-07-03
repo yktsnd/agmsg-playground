@@ -1,7 +1,9 @@
 # Same-type `agmsg spawn` (claude-code → claude-code) inherits the parent's session-identity env vars, breaks auth
 
-Flagging this as something we hit building a custom multi-agent pipeline
-on `spawn` — aware this specific same-type-peer pattern may be outside
+Flagging this as something we hit building an autonomous Claude Code
+(reviewer) + Codex (implementer) dev pair on `spawn`, where the outer
+setup session spawns an independent `claude-code` peer alongside a
+`codex` peer — aware this specific same-type-peer pattern may be outside
 what agmsg is meant to support, so feel free to close if it's out of
 scope. Sharing since the bug and fix are both small and concrete.
 
