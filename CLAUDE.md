@@ -26,5 +26,6 @@
 - `docs/troubleshooting.md` — 実際に踏んだ問題と対処
 - `docs/upstream/` — agmsg 本体へ提案予定の修正(検証済みパッチ+issue 下書き)
 - `playground/` — ペアの作業題材(`wordstats` CLI)とタスクバックログ
+- `projects/sekimori/` — AI プロトタイプ公開用ミニゲートウェイ(manabi-repeat 収束後の新プロジェクト。設計・仕様は `projects/sekimori/docs/`)
 
 テストは `cd playground && python3 -m unittest discover -s tests` で全部回ります(標準ライブラリのみ、依存インストール不要)。
