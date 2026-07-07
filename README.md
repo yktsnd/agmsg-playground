@@ -73,6 +73,7 @@ cd /path/to/your-repo-agent
 | `docs/troubleshooting.md` | 構築・運用で実際に踏んだ罠と対処の記録 |
 | `docs/upstream/` | agmsg 本体に見つかった同種の問題への検証済み修正(提案準備中) |
 | `playground/` | 自律ペアの作業題材となるサンプルプロジェクト(`wordstats`)とタスクバックログ |
+| `projects/sekimori/` | AI プロトタイプ公開用ミニゲートウェイ(manabi-repeat 収束後の新プロジェクト。独立した README・`docs/` を持つ) |
 
 ## License
 
