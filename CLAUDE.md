@@ -26,6 +26,7 @@
 - `docs/troubleshooting.md` — 実際に踏んだ問題と対処
 - `docs/upstream/` — agmsg 本体へ提案予定の修正(検証済みパッチ+issue 下書き)
 - `playground/` — ペアの作業題材(`wordstats` CLI)とタスクバックログ
-- `projects/sekimori/` — AI プロトタイプ公開用ミニゲートウェイ(manabi-repeat 収束後の新プロジェクト。設計・仕様は `projects/sekimori/docs/`)
+
+manabi-repeat 収束後の新プロジェクト「sekimori」(AI プロトタイプ公開用ミニゲートウェイ)は、設計・実装の初期検討をこのリポジトリの `projects/sekimori/` で行った後、コミット履歴込みで独立リポジトリ [yktsnd/sekimori](https://github.com/yktsnd/sekimori) に切り出した(2026-07)。以後の作業はそちらで行う。
 
 テストは `cd playground && python3 -m unittest discover -s tests` で全部回ります(標準ライブラリのみ、依存インストール不要)。
